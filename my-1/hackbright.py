@@ -149,34 +149,6 @@ def get_grades_by_title(title):
     return rows
 
 
-
-
-def get_student_and_project(github):
-    """Get a list of all student grades for a project by its title"""
-
-    QUERY = """
-        SELECT students.id, first_name, last_name, students.github, project_title, grade
-        FROM students
-        JOIN grades
-        ON students.github = grades.student_github
-        WHERE students.github = :github
-        """
-
-    db_cursor = db.session.execute(QUERY, {"github": github})
-
-    rows = db_cursor.fetchall()
-
-    # for row in rows:
-    #     print(f"Student {row[0]} received grade of {row[1]} for {title}")
-
-    return rows
-
-
-
-
-
-
-
 def handle_input():
     """Main loop.
 
