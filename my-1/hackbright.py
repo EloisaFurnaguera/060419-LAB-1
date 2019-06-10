@@ -20,20 +20,19 @@ def connect_to_db(app):
     db.init_app(app)
 
 
-def get_student_by_github(github):
+def get_student_by_github(github_arg_var):
     """Given a GitHub account name, print info about the matching student."""
 
     QUERY = """
-        SELECT first_name, last_name, github
+        SELECT id, first_name, last_name, github
         FROM students
-        WHERE github = :github
+        WHERE github = :github_placeholder
         """
 
-    db_cursor = db.session.execute(QUERY, {'github': github})
+    db_cursor = db.session.execute(QUERY, {'github_placeholder': github_arg_var})
 
     row = db_cursor.fetchone()
 
-    print(f"Student: {row[0]} {row[1]}\nGitHub account: {row[2]}")
 
     return row
 
@@ -90,7 +89,7 @@ def get_grade_by_github_title(github, title):
 
     row = db_cursor.fetchone()
 
-    print(f"Student {github} in project {title} received grade of {row[0]}")
+    
 
     return row
 
@@ -150,6 +149,34 @@ def get_grades_by_title(title):
     return rows
 
 
+
+
+def get_student_and_project(github):
+    """Get a list of all student grades for a project by its title"""
+
+    QUERY = """
+        SELECT students.id, first_name, last_name, students.github, project_title, grade
+        FROM students
+        JOIN grades
+        ON students.github = grades.student_github
+        WHERE students.github = :github
+        """
+
+    db_cursor = db.session.execute(QUERY, {"github": github})
+
+    rows = db_cursor.fetchall()
+
+    # for row in rows:
+    #     print(f"Student {row[0]} received grade of {row[1]} for {title}")
+
+    return rows
+
+
+
+
+
+
+
 def handle_input():
     """Main loop.
 
@@ -195,7 +222,6 @@ def handle_input():
 
 
 if __name__ == "__main__":
-
     connect_to_db(app)
 
     handle_input()
